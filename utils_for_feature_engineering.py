@@ -2,6 +2,8 @@ import seaborn as sns
 import pandas as pd
 import numpy as np
 from matplotlib import pyplot as plt
+from sklearn.preprocessing import LabelEncoder
+
 
 def check_df(df, head=5):
     print("##################### Shape #####################")
@@ -82,6 +84,14 @@ def binary_cols(df):
 def one_hot_encoder(df, ohe_cols, drop_first=False):
     return  pd.get_dummies(df, columns=ohe_cols, drop_first=drop_first,dtype=int)
 
+def label_encoder(df, le_col):
+    label_encoder = LabelEncoder()
+
+    for col in le_col:
+        df[col] = label_encoder.fit_transform(df[col])
+    
+    return df
+
 def outlier_thresholds(df, col_name, q1_percentage=0.05, q3_percentage=0.95):
     q1 = df[col_name].quantile(q1_percentage)
     q3 = df[col_name].quantile(q3_percentage)
@@ -115,5 +125,3 @@ def missing_values_table(df, return_na_cols=False):
     if return_na_cols:
         missing_df
 
-
-    

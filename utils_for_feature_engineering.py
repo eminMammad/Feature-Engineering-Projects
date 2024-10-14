@@ -106,4 +106,14 @@ def grab_outliers(df, col_name, index=False, q1_percentage=0.05, q3_percentage=0
     if index:
         return outliers
 
+def missing_values_table(df, return_na_cols=False):
+    na_cols = [col for col in df.columns if df[col].isnull().sum() > 0]
+    na_miss_counts = df[na_cols].isnull().sum().sort_values(ascending=False)
+    ratio = (na_miss_counts / df[na_cols].shape[0] * 100).sort_values(ascending=False)
+    missing_df = pd.concat([na_miss_counts, np.round(ratio, 2)], keys=["n_miss", "ratio"], axis=1)
+    print(missing_df, end='\n')
+    if return_na_cols:
+        missing_df
+
+
     

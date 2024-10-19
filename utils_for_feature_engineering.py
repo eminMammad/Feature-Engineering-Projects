@@ -10,6 +10,8 @@ def check_df(df, head=5):
     print(df.shape)
     print("##################### Types #####################")
     print(df.dtypes)
+    print("##################### # of Unique vl. #####################")
+    print(df.nunique())
     print("##################### Head #####################")
     print(df.head(head))
     print("##################### Tail #####################")
@@ -21,9 +23,23 @@ def check_df(df, head=5):
     print(numeric_df.quantile([0, 0.05, 0.50, 0.95, 0.99, 1]).T)
 
 def grab_columns(df,cat_th=10, car_th=20):
-    cat_cols = [col for col in df.columns if df[col].dtype not in [int, float]]
-    num_cols = [col for col in df.columns if df[col].dtype in [int, float]]
-    num_but_cat = [col for col in df.columns if df[col].dtype in [int,float] and df[col].nunique() < cat_th]
+    """
+
+    This function is used to grab columns as categorical, numerical, categorical but cardinal, numerical but categorical
+
+    params:
+    param df: dataframe
+    param cat_th: threshold for number of unique values in a column to be considered as categorical
+    param car_th: threshold for number of unique values in a column to be considered as categorical but cardinal
+
+    returns:
+    cat_cols: list of categorical columns
+    num_cols: list of numerical columns
+    cat_but_car: list of categorical but cardinal columns
+    """
+    cat_cols = [col for col in df.columns if df[col].dtype in ["object", "category", "bool"]]
+    num_cols = [col for col in df.columns if df[col].dtype not in  ["object", "category", "bool"]]
+    num_but_cat = [col for col in df.columns if df[col].dtype in num_cols and df[col].nunique() < cat_th]
     cat_but_car = [col for col in df.columns if df[col].dtype in ["object", "category", "bool"] and df[col].nunique() > car_th]
 
     cat_cols = cat_cols + num_but_cat
@@ -67,7 +83,7 @@ def num_summary(df, numerical_col, plot=False):
         plt.show()
 
 def target_summary_with_num(df, target, numerical_col):
-    print(df.groupby(target).agg({numerical_col: "mean"}), end="\n\n\n")
+    print(df.groupby(target).agg({numerical_col: ["mean", "count"]}), end="\n\n\n")
 
 
 def show_corr(df):
@@ -125,3 +141,22 @@ def missing_values_table(df, return_na_cols=False):
     if return_na_cols:
         missing_df
 
+
+def missing_vs_target(df, target, na_cols):
+    for col in na_cols:
+        print(df.groupby(target).agg({col: ["mean", "count"]}))
+
+
+def get_high_corr_cols(df, plot=False, corr_th=0.9):
+    corr_matrix = df.corr().abs()
+    upper_triangle = corr_matrix.where(np.triu(np.ones(corr_matrix.shape, dtype=bool), k=1))
+    drop_list = [col for col in upper_triangle.columns if any(upper_triangle[col] > corr_th)]
+   
+    if plot:
+        import seaborn as sns
+        import matplotlib.pyplot as plt
+        plt.subplots(figsize=(20, 20))
+        sns.heatmap(corr_matrix, cmap="YlGnBu", linewidths=.5, annot=True, fmt=".2f")
+        plt.show()
+
+    return drop_list

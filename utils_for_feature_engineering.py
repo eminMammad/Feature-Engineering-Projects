@@ -182,7 +182,7 @@ def plot_importance(model, features, dataframe, save=False):
     num=len(dataframe)
     feature_imp = pd.DataFrame({"Value": model.feature_importances_, "Feature": features})
     plt.figure(figsize=(10, 10))
-    sns.set(font_scale = 1)
+    sns.set_theme(font_scale = 1)
     sns.barplot(x="Value", y="Feature", data=feature_imp.sort_values(by="Value", ascending=False)[0:num])
 
     plt.title('Features')

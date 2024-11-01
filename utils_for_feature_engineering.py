@@ -29,9 +29,9 @@ def grab_columns(df,cat_th=10, car_th=20):
     This function is used to grab columns as categorical, numerical, categorical but cardinal, numerical but categorical
 
     params:
-    param df: dataframe
-    param cat_th: threshold for number of unique values in a column to be considered as categorical
-    param car_th: threshold for number of unique values in a column to be considered as categorical but cardinal
+    df: dataframe
+    cat_th: threshold for number of unique values in a column to be considered as categorical
+    car_th: threshold for number of unique values in a column to be considered as categorical but cardinal
 
     returns:
     cat_cols: list of categorical columns
@@ -88,9 +88,9 @@ def target_summary_with_num(df, target, numerical_col):
     This function is used to show the mean and count of numerical columns with respect to target column
     
     params:
-    param df: dataframe
-    param target: target column
-    param numerical_col: numerical column
+    df: dataframe
+    target: target column
+    numerical_col: numerical column
     
     returns:
     None
@@ -179,6 +179,21 @@ def get_high_corr_cols(df, plot=False, corr_th=0.9):
 
 
 def plot_importance(model, features, dataframe, save=False):
+    """
+    This function is used to plot feature importances of a model
+
+    params:
+    model: model
+    features: features of the model
+    dataframe: dataframe without target column
+
+    returns:
+    None
+
+    note:
+    ! dataframe should not contain target column
+    ! if save parameter is True, the plot will be saved as png image
+    """
     num=len(dataframe)
     feature_imp = pd.DataFrame({"Value": model.feature_importances_, "Feature": features})
     plt.figure(figsize=(10, 10))

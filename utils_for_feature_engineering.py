@@ -39,7 +39,7 @@ def grab_columns(df,cat_th=10, car_th=20):
     """
     cat_cols = [col for col in df.columns if df[col].dtype in ["object", "category", "bool"]]
     num_cols = [col for col in df.columns if df[col].dtype not in  ["object", "category", "bool"]]
-    num_but_cat = [col for col in df.columns if df[col].dtype in num_cols and df[col].nunique() < cat_th]
+    num_but_cat = [col for col in df.columns if col in num_cols and df[col].nunique() < cat_th]
     cat_but_car = [col for col in df.columns if df[col].dtype in ["object", "category", "bool"] and df[col].nunique() > car_th]
 
     cat_cols = cat_cols + num_but_cat
@@ -83,6 +83,17 @@ def num_summary(df, numerical_col, plot=False):
         plt.show()
 
 def target_summary_with_num(df, target, numerical_col):
+    """
+    This function is used to show the mean and count of numerical columns with respect to target column
+    
+    params:
+    param df: dataframe
+    param target: target column
+    param numerical_col: numerical column
+    
+    returns:
+    None
+    """
     print(df.groupby(target).agg({numerical_col: ["mean", "count"]}), end="\n\n\n")
 
 
@@ -139,7 +150,7 @@ def missing_values_table(df, return_na_cols=False):
     missing_df = pd.concat([na_miss_counts, np.round(ratio, 2)], keys=["n_miss", "ratio"], axis=1)
     print(missing_df, end='\n')
     if return_na_cols:
-        missing_df
+        return na_cols
 
 
 def missing_vs_target(df, target, na_cols):

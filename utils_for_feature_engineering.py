@@ -22,6 +22,7 @@ def check_df(df, head=5):
     numeric_df = df.select_dtypes(include=[np.float64, np.int64])
     print(numeric_df.quantile([0, 0.05, 0.50, 0.95, 0.99, 1]).T)
 
+
 def grab_columns(df,cat_th=10, car_th=20):
     """
 
@@ -69,7 +70,6 @@ def cat_summary(df,col_name,plot=False):
         plt.show(block=True)
 
 
-
 def num_summary(df, numerical_col, plot=False):
     quantiles = [0.05, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 0.95, 0.99]
     print(df[numerical_col].describe(quantiles))
@@ -81,6 +81,7 @@ def num_summary(df, numerical_col, plot=False):
         # OR
         sns.boxplot(x=df[numerical_col], data=df)
         plt.show()
+
 
 def target_summary_with_num(df, target, numerical_col):
     """
@@ -108,8 +109,10 @@ def show_corr(df):
 def binary_cols(df):
     return [col for col in df.columns if df[col].dtype in ["object", "category", "bool", np.int64] and df[col].nunique() == 2]
 
+
 def one_hot_encoder(df, ohe_cols, drop_first=False):
     return  pd.get_dummies(df, columns=ohe_cols, drop_first=drop_first,dtype=int)
+
 
 def label_encoder(df, le_col):
     label_encoder = LabelEncoder()
@@ -118,6 +121,7 @@ def label_encoder(df, le_col):
         df[col] = label_encoder.fit_transform(df[col])
     
     return df
+
 
 def outlier_thresholds(df, col_name, q1_percentage=0.05, q3_percentage=0.95):
     q1 = df[col_name].quantile(q1_percentage)
@@ -142,6 +146,7 @@ def grab_outliers(df, col_name, index=False, q1_percentage=0.05, q3_percentage=0
     print(df.iloc[outliers, :].head(10))
     if index:
         return outliers
+
 
 def missing_values_table(df, return_na_cols=False):
     na_cols = [col for col in df.columns if df[col].isnull().sum() > 0]
@@ -171,3 +176,18 @@ def get_high_corr_cols(df, plot=False, corr_th=0.9):
         plt.show()
 
     return drop_list
+
+
+def plot_importance(model, features, dataframe, save=False):
+    num=len(dataframe)
+    feature_imp = pd.DataFrame({"Value": model.feature_importances_, "Feature": features})
+    plt.figure(figsize=(10, 10))
+    sns.set(font_scale = 1)
+    sns.barplot(x="Value", y="Feature", data=feature_imp.sort_values(by="Value", ascending=False)[0:num])
+
+    plt.title('Features')
+    plt.tight_layout()
+    plt.show()
+
+    if save:
+        plt.savefig("importances.png")
